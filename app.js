@@ -3,8 +3,6 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const multer = require('multer');
 const path = require('path');
-const bcrypt = require('bcrypt');
-const { body, validationResult } = require('express-validator');
 require('dotenv').config();
 
 const app = express();
@@ -12,13 +10,13 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(bodyParser.json());
-app.use(express.static('public'));
+app.use(express.static('public')); // Serve static files from 'public' folder
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // MongoDB Connection
-const MONGO_URI = process.env.MONGO_URI;
+const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://Abdulelah:sVN1gECLdkbk8Lcu@apartment.ak29g.mongodb.net/?retryWrites=true&w=majority&appName=Apartment";
 mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log('MongoDB connected successfully!'))
+    .then(() => console.log('MongoDB Atlas connected successfully!'))
     .catch(err => console.error('MongoDB connection error:', err));
 
 // Multer for File Upload
@@ -28,13 +26,12 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// Mongoose Schemas
+// Mongoose Schemas and Models
 const UserSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
     name: { type: String, required: true },
     phone: { type: String, required: true },
-    photo: { type: String }
+    photo: { type: String }, // Path to photo if uploaded
 });
 
 const ExpenseSchema = new mongoose.Schema({
@@ -47,48 +44,35 @@ const ExpenseSchema = new mongoose.Schema({
 const User = mongoose.model('User', UserSchema);
 const Expense = mongoose.model('Expense', ExpenseSchema);
 
-// Routes
+// Root Route - Serve login.html
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
 
 // Register User
-app.post('/api/register',
-    [
-        body('email').isEmail(),
-        body('password').isLength({ min: 6 }),
-        body('name').notEmpty(),
-        body('phone').notEmpty()
-    ],
-    async (req, res) => {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
-        }
+app.post('/api/register', async (req, res) => {
+    try {
+        const { email, password, name, phone } = req.body;
+        const existingUser = await User.findOne({ email });
 
-        try {
-            const { email, password, name, phone } = req.body;
-            const hashedPassword = await bcrypt.hash(password, 10);
-            const existingUser = await User.findOne({ email });
+        if (existingUser) return res.status(400).json({ error: 'Email already exists' });
 
-            if (existingUser) return res.status(400).json({ error: 'Email already exists' });
+        const newUser = new User({ email, password, name, phone });
+        await newUser.save();
 
-            const newUser = new User({ email, password: hashedPassword, name, phone });
-            await newUser.save();
-
-            res.json({ message: 'User registered successfully' });
-        } catch (error) {
-            res.status(500).json({ error: 'Internal server error' });
-        }
+        res.json({ message: 'User registered successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
     }
-);
+});
 
 // Login User
 app.post('/api/login', async (req, res) => {
     try {
         const { email, password } = req.body;
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email, password });
 
-        if (!user || !(await bcrypt.compare(password, user.password))) {
-            return res.status(400).json({ error: 'Invalid credentials' });
-        }
+        if (!user) return res.status(400).json({ error: 'Invalid credentials' });
 
         res.json({ message: 'Login successful', user });
     } catch (error) {
@@ -96,7 +80,7 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-// Profile Management
+// Update Profile
 app.post('/api/profile', upload.single('photo'), async (req, res) => {
     try {
         const { email, name, phone } = req.body;
@@ -116,37 +100,46 @@ app.post('/api/profile', upload.single('photo'), async (req, res) => {
     }
 });
 
-// Fetch Profile Data
+// Route to fetch profile data based on email
 app.get('/api/get-profile', async (req, res) => {
     try {
-        const { email } = req.query;
+        const { email } = req.query; // Extract email from query params
+        if (!email) {
+            return res.status(400).json({ message: 'Email is required' });
+        }
+
+        // Find the user in your database
         const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
 
-        if (!user) return res.status(404).json({ message: 'User not found' });
-
+        // Send user profile data
         res.json({
             name: user.name,
             phone: user.phone,
-            photo: user.photo || null
+            photo: user.photo || null,
         });
     } catch (error) {
+        console.error('Error fetching profile:', error.message);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
 
-// Expenses CRUD
+// Add Expense
 app.post('/api/expenses', async (req, res) => {
     try {
         const { email, amount, description } = req.body;
         const newExpense = new Expense({ email, amount, description });
-        await newExpense.save();
 
+        await newExpense.save();
         res.json({ message: 'Expense added successfully', expense: newExpense });
     } catch (error) {
         res.status(500).json({ error: 'Failed to add expense' });
     }
 });
 
+// Get All Expenses
 app.get('/api/expenses', async (req, res) => {
     try {
         const expenses = await Expense.find();
@@ -156,13 +149,21 @@ app.get('/api/expenses', async (req, res) => {
     }
 });
 
+// Update Expense
 app.put('/api/expenses/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const { description, amount } = req.body;
 
+        // Validate ObjectId
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ error: 'Invalid expense ID' });
+        }
+
         const updatedExpense = await Expense.findByIdAndUpdate(
-            id, { description, amount }, { new: true }
+            id,
+            { description, amount },
+            { new: true }
         );
 
         if (!updatedExpense) return res.status(404).json({ error: 'Expense not found' });
@@ -173,9 +174,16 @@ app.put('/api/expenses/:id', async (req, res) => {
     }
 });
 
+// Delete Expense
 app.delete('/api/expenses/:id', async (req, res) => {
     try {
         const { id } = req.params;
+
+        // Validate ObjectId
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ error: 'Invalid expense ID' });
+        }
+
         const deletedExpense = await Expense.findByIdAndDelete(id);
 
         if (!deletedExpense) return res.status(404).json({ error: 'Expense not found' });
