@@ -1,0 +1,20 @@
+{
+  "expenses": [
+    {
+      "email": "l0hii@hotmail.com",
+      "amount": "250",
+      "description": "etc",
+      "photo": "/uploads/1734388368867-IMG.jpg",
+      "date": "2024-12-16T22:33:04.189Z"
+    }
+  ],
+  "users": {
+    "ABDULELAH ALSHEHRI": "/uploads/1734385736717-IMG.jpg",
+    "l0hii@hotmail.com": {
+      "name": "ABDULELAH ALSHEHRI",
+      "phone": "0559039981",
+      "password": "Aa0559039981",
+      "photo": "/uploads/1734388368867-IMG.jpg"
+    }
+  }
+}
