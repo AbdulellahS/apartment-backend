@@ -27,13 +27,15 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Mongoose Schemas and Models
+
 const UserSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
-    password: String,
-    name: String,
-    phone: String,
-    photo: { type: String, default: '' }
+    name: { type: String, required: true },
+    phone: { type: String, required: true },
+    photo: { type: String }, // Path to photo if uploaded
 });
+
+module.exports = mongoose.model('User', UserSchema);
 
 const ExpenseSchema = new mongoose.Schema({
     email: String,
@@ -96,6 +98,32 @@ app.post('/api/profile', upload.single('photo'), async (req, res) => {
         res.json({ message: 'Profile updated successfully', user });
     } catch (error) {
         res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Route to fetch profile data based on email
+app.get('/api/get-profile', async (req, res) => {
+    try {
+        const { email } = req.query; // Extract email from query params
+        if (!email) {
+            return res.status(400).json({ message: 'Email is required' });
+        }
+
+        // Find the user in your database (replace 'User' with your model name)
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Send user profile data
+        res.json({
+            name: user.name,
+            phone: user.phone,
+            photo: user.photo || null,
+        });
+    } catch (error) {
+        console.error('Error fetching profile:', error.message);
+        res.status(500).json({ message: 'Internal server error' });
     }
 });
 
