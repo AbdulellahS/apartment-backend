@@ -82,7 +82,7 @@
 
     // Fetch and Pre-fill Profile Data
     async function fetchProfileData() {
-        const res = await fetch(`/api/get-profile?email=${email}`);
+        const res = await fetch(`https://apartment-backend-2qwi.onrender.com/api/get-profile?email=${email}`);
         if (res.ok) {
             const { name, phone, photo } = await res.json();
             document.getElementById('name').value = name || '';
@@ -112,7 +112,7 @@
         formData.append('phone', document.getElementById('phone').value);
         formData.append('photo', document.getElementById('photo').files[0]);
 
-        await fetch('/api/profile', { method: 'POST', body: formData });
+        await fetch('https://apartment-backend-2qwi.onrender.com/api/profile', { method: 'POST', body: formData });
         alert('Profile updated successfully!');
         window.location.href = 'main.html';
     });
