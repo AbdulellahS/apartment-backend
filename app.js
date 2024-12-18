@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const multer = require('multer');
 const path = require('path');
 require('dotenv').config();
+app.use(express.static('public'));
 
 const app = express(); // Initialize express app here
 
