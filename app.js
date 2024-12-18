@@ -189,12 +189,10 @@ app.put('/api/expenses/:id', async (req, res) => {
         const { id } = req.params;
         const { description, amount, modifiedDate } = req.body;
 
-        // Validate ObjectId
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ error: 'Invalid expense ID' });
         }
 
-        // Find and update the expense
         const updatedExpense = await Expense.findByIdAndUpdate(
             id,
             { description, amount, modifiedDate },
