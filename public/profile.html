@@ -57,13 +57,6 @@
 
     <!-- Main Content -->
     <div class="container mt-4">
-        <div class="profile-photo-container">
-            <img id="photo-preview" src="default-avatar.png" alt="Profile Photo" class="profile-photo">
-            <button class="btn btn-sm btn-secondary" onclick="document.getElementById('photo').click()">Change
-                Photo</button>
-            <input type="file" id="photo" accept="image/*" style="display:none" onchange="previewPhoto(event)">
-        </div>
-
         <!-- Personal Information Section -->
         <div class="profile-section">
             <div class="section-title" onclick="toggleSection('personal-section')">
@@ -72,18 +65,37 @@
             </div>
             <div id="personal-section">
                 <form id="personal-form">
+                    <!-- Profile Photo Section -->
+                    <div class="text-center mb-3">
+                        <img id="photo-preview" src="default-avatar.png" alt="Profile Photo" class="profile-photo"
+                            style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover;">
+                        <div class="mt-2">
+                            <button type="button" class="btn btn-sm btn-secondary"
+                                onclick="document.getElementById('photo').click()">Change Photo</button>
+                            <input type="file" id="photo" accept="image/*" style="display:none"
+                                onchange="previewPhoto(event)">
+                        </div>
+                    </div>
+
+                    <!-- Name -->
                     <div class="mb-3">
                         <label for="name" class="form-label">Name</label>
                         <input type="text" id="name" class="form-control" required>
                     </div>
+
+                    <!-- Phone -->
                     <div class="mb-3">
                         <label for="phone" class="form-label">Phone</label>
                         <input type="text" id="phone" class="form-control" required>
                     </div>
+
+                    <!-- Birth Date -->
                     <div class="mb-3">
                         <label for="birthdate" class="form-label">Birth Date</label>
                         <input type="date" id="birthdate" class="form-control">
                     </div>
+
+                    <!-- Gender -->
                     <div class="mb-3">
                         <label for="gender" class="form-label">Gender</label>
                         <select id="gender" class="form-select">
@@ -92,49 +104,53 @@
                             <option value="Female">Female</option>
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-success">Save Personal Info</button>
-                </form>
-            </div>
-        </div>
 
-        <!-- Account Section -->
-        <div class="profile-section">
-            <div class="section-title" onclick="toggleSection('account-section')">
-                Account
-                <span id="account-toggle">[-]</span>
-            </div>
-            <div id="account-section">
-                <form id="account-form">
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" id="email" class="form-control" disabled>
-                    </div>
-                    <div class="mb-3">
-                        <label for="new-email" class="form-label">New Email</label>
-                        <input type="email" id="new-email" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Change Password</label>
-                        <input type="password" id="password" class="form-control">
-                    </div>
-                    <button type="submit" class="btn btn-warning">Update Account</button>
+                    <!-- Save Button -->
+                    <button type="submit" class="btn btn-success w-100">Save Personal Info</button>
                 </form>
-            </div>
-        </div>
-
-        <!-- Dashboard Section -->
-        <div class="profile-section">
-            <div class="section-title" onclick="toggleSection('dashboard-section')">
-                Dashboard
-                <span id="dashboard-toggle">[-]</span>
-            </div>
-            <div id="dashboard-section">
-                <div class="mb-3">
-                    <p>Total Expenses: <strong id="total-expenses">0</strong> SAR</p>
-                </div>
             </div>
         </div>
     </div>
+
+
+    <!-- Account Section -->
+    <div class="profile-section">
+        <div class="section-title" onclick="toggleSection('account-section')">
+            Account
+            <span id="account-toggle">[-]</span>
+        </div>
+        <div id="account-section">
+            <form id="account-form">
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" id="email" class="form-control" disabled>
+                </div>
+                <div class="mb-3">
+                    <label for="new-email" class="form-label">New Email</label>
+                    <input type="email" id="new-email" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Change Password</label>
+                    <input type="password" id="password" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-warning">Update Account</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard Section -->
+    <div class="profile-section">
+        <div class="section-title" onclick="toggleSection('dashboard-section')">
+            Dashboard
+            <span id="dashboard-toggle">[-]</span>
+        </div>
+        <div id="dashboard-section">
+            <div class="mb-3">
+                <p>Total Expenses: <strong id="total-expenses">0</strong> SAR</p>
+            </div>
+        </div>
+    </div>
+
 
     <script>
         const email = localStorage.getItem('email');
