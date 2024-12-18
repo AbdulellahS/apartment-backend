@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 const multer = require('multer');
 const path = require('path');
 require('dotenv').config();
-app.use(express.static('public'));
 
 const app = express(); // Initialize express app here
 
@@ -163,7 +162,6 @@ app.put('/api/expenses/:id', async (req, res) => {
         const { id } = req.params;
         const { description, amount } = req.body;
 
-        // Validate ObjectId
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ error: 'Invalid expense ID' });
         }
@@ -187,7 +185,6 @@ app.delete('/api/expenses/:id', async (req, res) => {
     try {
         const { id } = req.params;
 
-        // Validate ObjectId
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ error: 'Invalid expense ID' });
         }
