@@ -184,6 +184,34 @@ app.delete('/api/expenses/:id', async (req, res) => {
     }
 });
 
+app.put('/api/expenses/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { description, amount, modifiedDate } = req.body;
+
+        // Validate ObjectId
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ error: 'Invalid expense ID' });
+        }
+
+        // Find and update the expense
+        const updatedExpense = await Expense.findByIdAndUpdate(
+            id,
+            { description, amount, modifiedDate },
+            { new: true }
+        );
+
+        if (!updatedExpense) {
+            return res.status(404).json({ error: 'Expense not found' });
+        }
+
+        res.json({ message: 'Expense updated successfully', expense: updatedExpense });
+    } catch (error) {
+        console.error('Error updating expense:', error.message);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 // Get User-Specific Expenses
 app.get('/api/expenses', async (req, res) => {
     try {
