@@ -42,7 +42,9 @@ const ExpenseSchema = new mongoose.Schema({
     email: String,
     amount: Number,
     description: String,
-    date: { type: Date, default: Date.now }
+    date: { type: Date, default: Date.now },
+    modifiedDate: { type: Date, default: null } // Last modified date
+
 });
 
 const User = mongoose.model('User', UserSchema);
@@ -187,20 +189,17 @@ app.delete('/api/expenses/:id', async (req, res) => {
 app.put('/api/expenses/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { description, amount, modifiedDate } = req.body;
-
-        console.log("Request Payload:", { description, amount, modifiedDate }); // Log payload
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ error: 'Invalid expense ID' });
-        }
+        const { description, amount } = req.body;
 
         const updatedExpense = await Expense.findByIdAndUpdate(
             id,
-            { description, amount, modifiedDate: new Date(modifiedDate) }, // Force date conversion
-            { new: true }
+            { 
+                description, 
+                amount, 
+                modifiedDate: new Date() // Update the modified date
+            },
+            { new: true } // Return the updated document
         );
-
-        console.log("Updated Expense:", updatedExpense); // Log updated document
 
         if (!updatedExpense) {
             return res.status(404).json({ error: 'Expense not found' });
@@ -208,8 +207,8 @@ app.put('/api/expenses/:id', async (req, res) => {
 
         res.json({ message: 'Expense updated successfully', expense: updatedExpense });
     } catch (error) {
-        console.error('Error updating expense:', error.message);
-        res.status(500).json({ error: 'Internal server error' });
+        console.error('Error updating expense:', error);
+        res.status(500).json({ error: 'Failed to update expense' });
     }
 });
 
