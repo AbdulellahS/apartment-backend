@@ -19,6 +19,9 @@
             margin-bottom: 10px;
             font-size: 1.2rem;
             color: #555;
+            display: flex;
+            justify-content: space-between;
+            cursor: pointer;
         }
 
         .profile-photo-container {
@@ -41,9 +44,12 @@
 
 <!-- Navigation -->
 <nav class="navbar navbar-dark bg-primary">
-    <div class="container">
+    <div class="container d-flex justify-content-between">
         <a class="navbar-brand" href="#">Expense Tracker</a>
-        <button class="btn btn-danger" onclick="logout()">Logout</button>
+        <div>
+            <button class="btn btn-outline-light me-2" onclick="window.location.href='main.html'">Main Page</button>
+            <button class="btn btn-danger" onclick="logout()">Logout</button>
+        </div>
     </div>
 </nav>
 
@@ -57,57 +63,72 @@
 
     <!-- Personal Information Section -->
     <div class="profile-section">
-        <div class="section-title">Personal Information</div>
-        <form id="personal-form">
-            <div class="mb-3">
-                <label for="name" class="form-label">Name</label>
-                <input type="text" id="name" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <label for="phone" class="form-label">Phone</label>
-                <input type="text" id="phone" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <label for="birthdate" class="form-label">Birth Date</label>
-                <input type="date" id="birthdate" class="form-control">
-            </div>
-            <div class="mb-3">
-                <label for="gender" class="form-label">Gender</label>
-                <select id="gender" class="form-select">
-                    <option value="" selected>Select Gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-success">Save Personal Info</button>
-        </form>
+        <div class="section-title" onclick="toggleSection('personal-section')">
+            Personal Information
+            <span id="personal-toggle">[-]</span>
+        </div>
+        <div id="personal-section">
+            <form id="personal-form">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" id="name" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Phone</label>
+                    <input type="text" id="phone" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="birthdate" class="form-label">Birth Date</label>
+                    <input type="date" id="birthdate" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label for="gender" class="form-label">Gender</label>
+                    <select id="gender" class="form-select">
+                        <option value="" selected>Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-success">Save Personal Info</button>
+            </form>
+        </div>
     </div>
 
     <!-- Account Section -->
     <div class="profile-section">
-        <div class="section-title">Account</div>
-        <form id="account-form">
-            <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" id="email" class="form-control" disabled>
-            </div>
-            <div class="mb-3">
-                <label for="new-email" class="form-label">New Email</label>
-                <input type="email" id="new-email" class="form-control">
-            </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">Change Password</label>
-                <input type="password" id="password" class="form-control">
-            </div>
-            <button type="submit" class="btn btn-warning">Update Account</button>
-        </form>
+        <div class="section-title" onclick="toggleSection('account-section')">
+            Account
+            <span id="account-toggle">[-]</span>
+        </div>
+        <div id="account-section">
+            <form id="account-form">
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" id="email" class="form-control" disabled>
+                </div>
+                <div class="mb-3">
+                    <label for="new-email" class="form-label">New Email</label>
+                    <input type="email" id="new-email" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Change Password</label>
+                    <input type="password" id="password" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-warning">Update Account</button>
+            </form>
+        </div>
     </div>
 
     <!-- Dashboard Section -->
     <div class="profile-section">
-        <div class="section-title">Dashboard</div>
-        <div class="mb-3">
-            <p>Total Expenses: <strong id="total-expenses">0</strong> SAR</p>
+        <div class="section-title" onclick="toggleSection('dashboard-section')">
+            Dashboard
+            <span id="dashboard-toggle">[-]</span>
+        </div>
+        <div id="dashboard-section">
+            <div class="mb-3">
+                <p>Total Expenses: <strong id="total-expenses">0</strong> SAR</p>
+            </div>
         </div>
     </div>
 </div>
@@ -115,6 +136,20 @@
 <script>
     const email = localStorage.getItem('email');
     if (!email) window.location.href = 'login.html';
+
+    // Toggle Section Visibility
+    function toggleSection(sectionId) {
+        const section = document.getElementById(sectionId);
+        const toggle = document.getElementById(`${sectionId.split('-')[0]}-toggle`);
+
+        if (section.style.display === 'none') {
+            section.style.display = 'block';
+            toggle.textContent = '[-]';
+        } else {
+            section.style.display = 'none';
+            toggle.textContent = '[+]';
+        }
+    }
 
     // Fetch Profile Data
     async function fetchProfileData() {
@@ -140,40 +175,6 @@
             reader.readAsDataURL(file);
         }
     }
-
-    // Save Personal Information
-    document.getElementById('personal-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const formData = new FormData();
-        formData.append('email', email);
-        formData.append('name', document.getElementById('name').value);
-        formData.append('phone', document.getElementById('phone').value);
-        formData.append('birthdate', document.getElementById('birthdate').value);
-        formData.append('gender', document.getElementById('gender').value);
-        formData.append('photo', document.getElementById('photo').files[0]);
-
-        await fetch('https://apartment-backend-2qwi.onrender.com/api/profile', {
-            method: 'POST',
-            body: formData
-        });
-        alert('Profile updated successfully!');
-    });
-
-    // Update Account
-    document.getElementById('account-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const body = {
-            email,
-            newEmail: document.getElementById('new-email').value,
-            password: document.getElementById('password').value
-        };
-        await fetch('https://apartment-backend-2qwi.onrender.com/api/update-account', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body)
-        });
-        alert('Account updated successfully!');
-    });
 
     // Logout
     function logout() {
