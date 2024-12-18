@@ -22,6 +22,7 @@
             height: 120px;
             border-radius: 50%;
             object-fit: cover;
+            border: 2px solid #ccc;
         }
     </style>
 </head>
@@ -38,8 +39,9 @@
     </div>
 </nav>
 
-<!-- Personal Information Section -->
+<!-- Main Content -->
 <div class="container mt-4">
+    <!-- Personal Information Section -->
     <div class="profile-section">
         <div class="section-title" onclick="toggleSection('personal-section')">
             <h5>Personal Information</h5>
@@ -99,6 +101,18 @@
             </form>
         </div>
     </div>
+
+    <!-- Dashboard Section -->
+    <div class="profile-section">
+        <div class="section-title" onclick="toggleSection('dashboard-section')">
+            <h5>Dashboard</h5>
+        </div>
+        <div id="dashboard-section">
+            <div class="mb-3">
+                <p>Total Expenses: <strong id="total-expenses">0</strong> SAR</p>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -109,13 +123,14 @@
     async function fetchProfileData() {
         const res = await fetch(`https://apartment-backend-2qwi.onrender.com/api/get-profile?email=${email}`);
         if (res.ok) {
-            const { name, phone, birthdate, gender, photo } = await res.json();
+            const { name, phone, birthdate, gender, photo, totalExpenses } = await res.json();
             document.getElementById('name').value = name || '';
             document.getElementById('phone').value = phone || '';
             document.getElementById('birthdate').value = birthdate ? birthdate.split('T')[0] : '';
             document.getElementById('gender').value = gender || '';
             document.getElementById('email').value = email;
             document.getElementById('photo-preview').src = photo || 'default-avatar.png';
+            document.getElementById('total-expenses').innerText = totalExpenses || 0;
         }
     }
 
