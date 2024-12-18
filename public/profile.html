@@ -66,15 +66,11 @@
             <div id="personal-section">
                 <form id="personal-form">
                     <!-- Profile Photo Section -->
-                    <div class="text-center mb-3">
-                        <img id="photo-preview" src="default-avatar.png" alt="Profile Photo" class="profile-photo"
-                            style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover;">
-                        <div class="mt-2">
-                            <button type="button" class="btn btn-sm btn-secondary"
-                                onclick="document.getElementById('photo').click()">Change Photo</button>
-                            <input type="file" id="photo" accept="image/*" style="display:none"
-                                onchange="previewPhoto(event)">
-                        </div>
+                    <div class="profile-photo-container">
+                        <img id="photo-preview" src="default-avatar.png" alt="Profile Photo" class="profile-photo">
+                        <button class="btn btn-sm btn-secondary" onclick="document.getElementById('photo').click()">Change
+                            Photo</button>
+                        <input type="file" id="photo" accept="image/*" style="display:none" onchange="previewPhoto(event)">
                     </div>
 
                     <!-- Name -->
