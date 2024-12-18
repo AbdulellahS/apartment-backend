@@ -92,10 +92,15 @@ app.post('/api/login', async (req, res) => {
 app.post('/api/profile', upload.single('photo'), async (req, res) => {
     try {
         const { email, name, phone, birthdate, gender } = req.body;
+
+        // Validate incoming data
+        if (!email) return res.status(400).json({ error: 'Email is required' });
+
         const user = await User.findOne({ email });
 
         if (!user) return res.status(404).json({ error: 'User not found' });
 
+        // Update user fields
         user.name = name || user.name;
         user.phone = phone || user.phone;
         user.birthdate = birthdate || user.birthdate;
@@ -103,8 +108,10 @@ app.post('/api/profile', upload.single('photo'), async (req, res) => {
         if (req.file) user.photo = `/uploads/${req.file.filename}`;
 
         await user.save();
+
         res.json({ message: 'Profile updated successfully', user });
     } catch (error) {
+        console.error('Error updating profile:', error.message);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
