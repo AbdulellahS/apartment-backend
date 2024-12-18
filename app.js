@@ -189,15 +189,18 @@ app.put('/api/expenses/:id', async (req, res) => {
         const { id } = req.params;
         const { description, amount, modifiedDate } = req.body;
 
+        console.log("Request Payload:", { description, amount, modifiedDate }); // Log payload
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ error: 'Invalid expense ID' });
         }
 
         const updatedExpense = await Expense.findByIdAndUpdate(
             id,
-            { description, amount, modifiedDate },
+            { description, amount, modifiedDate: new Date(modifiedDate) }, // Force date conversion
             { new: true }
         );
+
+        console.log("Updated Expense:", updatedExpense); // Log updated document
 
         if (!updatedExpense) {
             return res.status(404).json({ error: 'Expense not found' });
