@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const multer = require('multer');
 const path = require('path');
+app.use(express.static('public'));
 require('dotenv').config();
 
 const app = express();

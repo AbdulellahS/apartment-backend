@@ -24,8 +24,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
@@ -35,7 +40,11 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
             <a class="navbar-brand" href="#">Expense Tracker</a>
-            <button class="btn btn-danger" onclick="logout()">Logout</button>
+            <div>
+                <button class="btn btn-outline-light me-2"
+                    onclick="window.location.href='profile.html'">Profile</button>
+                <button class="btn btn-danger" onclick="logout()">Logout</button>
+            </div>
         </div>
     </nav>
 
