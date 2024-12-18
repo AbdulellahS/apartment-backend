@@ -159,7 +159,7 @@
             document.getElementById('name').value = name || '';
             document.getElementById('phone').value = phone || '';
             document.getElementById('email').value = email;
-            document.getElementById('birthdate').value = birthdate || '';
+            document.getElementById('birthdate').value = birthdate ? birthdate.split('T')[0] : '';
             document.getElementById('gender').value = gender || '';
             document.getElementById('photo-preview').src = photo || 'default-avatar.png';
             document.getElementById('total-expenses').innerText = totalExpenses || 0;
