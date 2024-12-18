@@ -59,12 +59,21 @@ app.get('/', (req, res) => {
 app.post('/api/register', async (req, res) => {
     try {
         const { email, password, name, phone } = req.body;
-        const existingUser = await User.findOne({ email });
 
+        // Check if user already exists
+        const existingUser = await User.findOne({ email });
         if (existingUser) return res.status(400).json({ error: 'Email already exists' });
 
-        const hashedPassword = await bcrypt.hash(password, 10); // Hash password
-        const newUser = new User({ email, password: hashedPassword, name, phone });
+        // Hash password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Save new user
+        const newUser = new User({ 
+            email, 
+            password: hashedPassword, 
+            name, 
+            phone 
+        });
         await newUser.save();
 
         res.json({ message: 'User registered successfully' });
@@ -77,11 +86,14 @@ app.post('/api/register', async (req, res) => {
 app.post('/api/login', async (req, res) => {
     try {
         const { email, password } = req.body;
-        const user = await User.findOne({ email });
 
-        if (!user || !(await bcrypt.compare(password, user.password))) {
-            return res.status(400).json({ error: 'Invalid credentials' });
-        }
+        // Find user by email
+        const user = await User.findOne({ email });
+        if (!user) return res.status(400).json({ error: 'Invalid credentials' });
+
+        // Compare passwords
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) return res.status(400).json({ error: 'Invalid credentials' });
 
         res.json({ message: 'Login successful', user });
     } catch (error) {
