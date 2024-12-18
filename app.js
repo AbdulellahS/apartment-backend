@@ -145,11 +145,17 @@ app.get('/api/get-profile', async (req, res) => {
 app.post('/api/expenses', async (req, res) => {
     try {
         const { email, amount, description } = req.body;
-        const newExpense = new Expense({ email, amount, description });
 
+        if (!email || !amount || !description) {
+            return res.status(400).json({ error: 'Email, amount, and description are required.' });
+        }
+
+        const newExpense = new Expense({ email, amount, description });
         await newExpense.save();
+
         res.json({ message: 'Expense added successfully', expense: newExpense });
     } catch (error) {
+        console.error('Error adding expense:', error.message);
         res.status(500).json({ error: 'Failed to add expense' });
     }
 });

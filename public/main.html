@@ -5,9 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Main | Expense Tracker</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <script src="script.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .card {
+            border-radius: 8px;
+        }
+
+        .expense-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
 </head>
 <body class="bg-light">
 
@@ -68,7 +77,96 @@
     </div>
 </div>
 
-<script src="main.js"></script>
+<script>
+    const email = localStorage.getItem('email');
+    if (!email) window.location.href = 'login.html';
+
+    // Fetch and Display Expenses
+    async function fetchExpenses() {
+        try {
+            const res = await fetch(`https://apartment-backend-2qwi.onrender.com/api/expenses?email=${email}`);
+            const expenses = await res.json();
+            renderExpenses(expenses);
+        } catch (err) {
+            console.error('Error fetching expenses:', err);
+            alert('Failed to load expenses');
+        }
+    }
+
+    // Render Expenses in List
+    function renderExpenses(expenses) {
+        const list = document.getElementById('expenses-list');
+        list.innerHTML = '';
+
+        expenses.forEach(expense => {
+            const date = new Date(expense.date).toLocaleDateString();
+            list.innerHTML += `
+                <li class="list-group-item expense-item">
+                    <div>
+                        <strong>${expense.description}</strong> - ${expense.amount} SAR
+                    </div>
+                    <div>${date}</div>
+                </li>
+            `;
+        });
+    }
+
+    // Add Expense
+    document.getElementById('expense-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const amount = document.getElementById('amount').value;
+        const description = document.getElementById('description').value;
+
+        try {
+            const res = await fetch('https://apartment-backend-2qwi.onrender.com/api/expenses', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, amount, description })
+            });
+
+            if (res.ok) {
+                alert('Expense added successfully!');
+                fetchExpenses();
+                document.getElementById('expense-form').reset();
+            } else {
+                alert('Failed to add expense.');
+            }
+        } catch (err) {
+            console.error('Error adding expense:', err);
+            alert('Error adding expense.');
+        }
+    });
+
+    // Filter Expenses
+    async function filterExpenses() {
+        const startDate = document.getElementById('start-date').value;
+        const endDate = document.getElementById('end-date').value;
+
+        try {
+            const res = await fetch(`https://apartment-backend-2qwi.onrender.com/api/expenses?email=${email}`);
+            let expenses = await res.json();
+
+            if (startDate) expenses = expenses.filter(e => new Date(e.date) >= new Date(startDate));
+            if (endDate) expenses = expenses.filter(e => new Date(e.date) <= new Date(endDate));
+
+            renderExpenses(expenses);
+            document.getElementById('filterModal').querySelector('.btn-close').click();
+        } catch (err) {
+            console.error('Error filtering expenses:', err);
+        }
+    }
+
+    // Logout Functionality
+    function logout() {
+        localStorage.clear();
+        window.location.href = 'login.html';
+    }
+
+    // Initial Fetch
+    fetchExpenses();
+</script>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
