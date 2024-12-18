@@ -161,6 +161,29 @@ app.post('/api/expenses', async (req, res) => {
     }
 });
 
+app.delete('/api/expenses/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Validate ObjectId
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ error: 'Invalid expense ID' });
+        }
+
+        // Find and delete the expense
+        const deletedExpense = await Expense.findByIdAndDelete(id);
+
+        if (!deletedExpense) {
+            return res.status(404).json({ error: 'Expense not found' });
+        }
+
+        res.json({ message: 'Expense deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting expense:', error.message);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 // Get User-Specific Expenses
 app.get('/api/expenses', async (req, res) => {
     try {
