@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,114 +7,79 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .profile-section {
-            margin-top: 20px;
-            padding: 15px;
             border: 1px solid #ddd;
             border-radius: 8px;
             background-color: #f8f9fa;
+            padding: 20px;
+            margin-top: 20px;
         }
-
-        .section-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-            font-size: 1.2rem;
-            color: #555;
-            display: flex;
-            justify-content: space-between;
-            cursor: pointer;
-        }
-
         .profile-photo-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 15px;
+            text-align: center;
+            margin-bottom: 20px;
         }
-
         .profile-photo {
             width: 120px;
             height: 120px;
             border-radius: 50%;
             object-fit: cover;
-            margin-bottom: 10px;
         }
     </style>
 </head>
-
 <body class="bg-light">
 
-    <!-- Navigation -->
-    <nav class="navbar navbar-dark bg-primary">
-        <div class="container d-flex justify-content-between">
-            <a class="navbar-brand" href="#">Expense Tracker</a>
-            <div>
-                <button class="btn btn-outline-light me-2" onclick="window.location.href='main.html'">Main Page</button>
-                <button class="btn btn-danger" onclick="logout()">Logout</button>
-            </div>
+<!-- Navigation -->
+<nav class="navbar navbar-dark bg-primary">
+    <div class="container d-flex justify-content-between">
+        <a class="navbar-brand" href="#">Expense Tracker</a>
+        <div>
+            <button class="btn btn-outline-light me-2" onclick="window.location.href='main.html'">Main Page</button>
+            <button class="btn btn-danger" onclick="logout()">Logout</button>
         </div>
-    </nav>
+    </div>
+</nav>
 
-    <!-- Main Content -->
-    <div class="container mt-4">
-        <!-- Personal Information Section -->
-        <div class="profile-section">
-            <div class="section-title" onclick="toggleSection('personal-section')">
-                Personal Information
-                <span id="personal-toggle">[-]</span>
+<!-- Personal Information Section -->
+<div class="container mt-4">
+    <div class="profile-section">
+        <div class="section-title" onclick="toggleSection('personal-section')">
+            <h5>Personal Information</h5>
+        </div>
+        <div id="personal-section">
+            <div class="profile-photo-container">
+                <img id="photo-preview" src="default-avatar.png" alt="Profile Photo" class="profile-photo">
+                <button class="btn btn-sm btn-secondary mt-2" onclick="document.getElementById('photo').click()">Change Photo</button>
+                <input type="file" id="photo" accept="image/*" style="display:none" onchange="previewPhoto(event)">
             </div>
-            <div id="personal-section">
-                <form id="personal-form">
-                    <!-- Profile Photo Section -->
-                    <div class="profile-photo-container">
-                        <img id="photo-preview" src="default-avatar.png" alt="Profile Photo" class="profile-photo">
-                        <button class="btn btn-sm btn-secondary"
-                            onclick="document.getElementById('photo').click()">Change
-                            Photo</button>
-                        <input type="file" id="photo" accept="image/*" style="display:none"
-                            onchange="previewPhoto(event)">
-                    </div>
-
-                    <!-- Name -->
-                    <div class="mb-3">
-                        <label for="name" class="form-label">Name</label>
-                        <input type="text" id="name" class="form-control" required>
-                    </div>
-
-                    <!-- Phone -->
-                    <div class="mb-3">
-                        <label for="phone" class="form-label">Phone</label>
-                        <input type="text" id="phone" class="form-control" required>
-                    </div>
-
-                    <!-- Birth Date -->
-                    <div class="mb-3">
-                        <label for="birthdate" class="form-label">Birth Date</label>
-                        <input type="date" id="birthdate" class="form-control">
-                    </div>
-
-                    <!-- Gender -->
-                    <div class="mb-3">
-                        <label for="gender" class="form-label">Gender</label>
-                        <select id="gender" class="form-select">
-                            <option value="" selected>Select Gender</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                        </select>
-                    </div>
-
-                    <!-- Save Button -->
-                    <button type="submit" class="btn btn-success w-100">Save Personal Info</button>
-                </form>
-            </div>
+            <form id="personal-form">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" id="name" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Phone</label>
+                    <input type="text" id="phone" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="birthdate" class="form-label">Birth Date</label>
+                    <input type="date" id="birthdate" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label for="gender" class="form-label">Gender</label>
+                    <select id="gender" class="form-select">
+                        <option value="" selected>Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-success w-100">Save Personal Info</button>
+            </form>
         </div>
     </div>
 
-
     <!-- Account Section -->
-    <div class="profile-section mt-4">
+    <div class="profile-section">
         <div class="section-title" onclick="toggleSection('account-section')">
-            Account
-            <span id="account-toggle">[-]</span>
+            <h5>Account</h5>
         </div>
         <div id="account-section">
             <form id="account-form">
@@ -131,108 +95,53 @@
                     <label for="password" class="form-label">Change Password</label>
                     <input type="password" id="password" class="form-control">
                 </div>
-                <button type="submit" class="btn btn-warning">Update Account</button>
+                <button type="submit" class="btn btn-warning w-100">Update Account</button>
             </form>
         </div>
     </div>
+</div>
 
-    <!-- Dashboard Section -->
-    <div class="profile-section mt-4">
-        <div class="section-title" onclick="toggleSection('dashboard-section')">
-            Dashboard
-            <span id="dashboard-toggle">[-]</span>
-        </div>
-        <div id="dashboard-section">
-            <div class="mb-3">
-                <p>Total Expenses: <strong id="total-expenses">0</strong> SAR</p>
-            </div>
-        </div>
-    </div>
+<script>
+    const email = localStorage.getItem('email');
+    if (!email) window.location.href = 'login.html';
 
-
-    <script>
-        const email = localStorage.getItem('email');
-        if (!email) window.location.href = 'login.html';
-
-        // Toggle Section Visibility
-        function toggleSection(sectionId) {
-            const section = document.getElementById(sectionId);
-            const toggle = document.getElementById(`${sectionId.split('-')[0]}-toggle`);
-
-            if (section.style.display === 'none') {
-                section.style.display = 'block';
-                toggle.textContent = '[-]';
-            } else {
-                section.style.display = 'none';
-                toggle.textContent = '[+]';
-            }
+    // Fetch Profile Data
+    async function fetchProfileData() {
+        const res = await fetch(`https://apartment-backend-2qwi.onrender.com/api/get-profile?email=${email}`);
+        if (res.ok) {
+            const { name, phone, birthdate, gender, photo } = await res.json();
+            document.getElementById('name').value = name || '';
+            document.getElementById('phone').value = phone || '';
+            document.getElementById('birthdate').value = birthdate ? birthdate.split('T')[0] : '';
+            document.getElementById('gender').value = gender || '';
+            document.getElementById('email').value = email;
+            document.getElementById('photo-preview').src = photo || 'default-avatar.png';
         }
+    }
 
-        // Fetch Profile Data
-        async function fetchProfileData() {
-            const res = await fetch(`https://apartment-backend-2qwi.onrender.com/api/get-profile?email=${email}`);
-            if (res.ok) {
-                const { name, phone, photo, birthdate, gender } = await res.json();
-                document.getElementById('name').value = name || '';
-                document.getElementById('phone').value = phone || '';
-                document.getElementById('birthdate').value = birthdate ? birthdate.split('T')[0] : '';
-                document.getElementById('gender').value = gender || '';
-                document.getElementById('photo-preview').src = photo || 'default-avatar.png';
-            } else {
-                alert('Failed to fetch profile data');
-            }
+    // Preview Photo
+    function previewPhoto(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => document.getElementById('photo-preview').src = e.target.result;
+            reader.readAsDataURL(file);
         }
+    }
 
-        // Save Personal Information
-        document.getElementById('personal-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
+    // Toggle Section Visibility
+    function toggleSection(sectionId) {
+        const section = document.getElementById(sectionId);
+        section.style.display = section.style.display === 'none' ? 'block' : 'none';
+    }
 
-            const formData = new FormData();
-            formData.append('email', email); // Ensure email is always sent
-            formData.append('name', document.getElementById('name').value);
-            formData.append('phone', document.getElementById('phone').value);
-            formData.append('birthdate', document.getElementById('birthdate').value);
-            formData.append('gender', document.getElementById('gender').value);
-            const photo = document.getElementById('photo').files[0];
-            if (photo) formData.append('photo', photo);
+    // Logout
+    function logout() {
+        localStorage.clear();
+        window.location.href = 'login.html';
+    }
 
-            try {
-                const res = await fetch('https://apartment-backend-2qwi.onrender.com/api/profile', {
-                    method: 'POST',
-                    body: formData,
-                });
-
-                if (res.ok) {
-                    alert('Personal Information updated successfully!');
-                    fetchProfileData(); // Refresh the profile data
-                } else {
-                    const error = await res.json();
-                    alert(`Error: ${error.message || 'Failed to update profile'}`);
-                }
-            } catch (err) {
-                console.error('Error saving personal info:', err);
-                alert('An error occurred. Please try again.');
-            }
-        });
-
-        // Preview Photo
-        function previewPhoto(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => document.getElementById('photo-preview').src = e.target.result;
-                reader.readAsDataURL(file);
-            }
-        }
-
-        // Logout
-        function logout() {
-            localStorage.clear();
-            window.location.href = 'login.html';
-        }
-
-        fetchProfileData();
-    </script>
+    fetchProfileData();
+</script>
 </body>
-
 </html>
