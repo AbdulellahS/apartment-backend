@@ -283,6 +283,12 @@
             }
         }
 
+        // Logout
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+
         // Event Listener for Delete Selected Button
         document.querySelector('.btn-danger').addEventListener('click', deleteSelected);
 
