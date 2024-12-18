@@ -1,24 +1,30 @@
-const express = require('express');
+const express = require('express'); // Require express first
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const multer = require('multer');
 const path = require('path');
-app.use(express.static('public'));
 require('dotenv').config();
 
-const app = express();
+const app = express(); // Initialize express app here
+
 const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(bodyParser.json());
-app.use(express.static('public')); // Serve static files from 'public' folder
+app.use(express.static('public')); // Serve static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // MongoDB Connection
 const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://Abdulelah:sVN1gECLdkbk8Lcu@apartment.ak29g.mongodb.net/?retryWrites=true&w=majority&appName=Apartment";
+
 mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log('MongoDB Atlas connected successfully!'))
+    .then(() => console.log('MongoDB connected successfully!'))
     .catch(err => console.error('MongoDB connection error:', err));
+
+// Start the Server
+app.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
+});
 
 // Multer for File Upload
 const storage = multer.diskStorage({
@@ -193,9 +199,4 @@ app.delete('/api/expenses/:id', async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: 'Failed to delete expense' });
     }
-});
-
-// Start the Server
-app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
 });
