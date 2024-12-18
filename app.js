@@ -1,23 +1,20 @@
-const express = require('express'); 
+const express = require('express'); // Require express first
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const multer = require('multer');
 const path = require('path');
-const bcrypt = require('bcrypt'); // For password hashing
 require('dotenv').config();
 
-const app = express(); 
-
+const app = express(); // Initialize express app here
 const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(bodyParser.json());
-app.use(express.static('public')); 
+app.use(express.static('public')); // Serve static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // MongoDB Connection
 const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://Abdulelah:sVN1gECLdkbk8Lcu@apartment.ak29g.mongodb.net/?retryWrites=true&w=majority&appName=Apartment";
-
 mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('MongoDB connected successfully!'))
     .catch(err => console.error('MongoDB connection error:', err));
@@ -32,12 +29,11 @@ const upload = multer({ storage });
 // Mongoose Schemas and Models
 const UserSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true }, // Encrypted password
     name: { type: String, required: true },
     phone: { type: String, required: true },
-    photo: { type: String }, 
-    birthdate: { type: Date },
-    gender: { type: String }
+    birthdate: { type: Date }, // Add Birth Date
+    gender: { type: String },  // Add Gender
+    photo: { type: String }    // Path to photo if uploaded
 });
 
 const ExpenseSchema = new mongoose.Schema({
@@ -59,21 +55,11 @@ app.get('/', (req, res) => {
 app.post('/api/register', async (req, res) => {
     try {
         const { email, password, name, phone } = req.body;
-
-        // Check if user already exists
         const existingUser = await User.findOne({ email });
+
         if (existingUser) return res.status(400).json({ error: 'Email already exists' });
 
-        // Hash password
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        // Save new user
-        const newUser = new User({ 
-            email, 
-            password: hashedPassword, 
-            name, 
-            phone 
-        });
+        const newUser = new User({ email, name, phone, password });
         await newUser.save();
 
         res.json({ message: 'User registered successfully' });
@@ -86,14 +72,9 @@ app.post('/api/register', async (req, res) => {
 app.post('/api/login', async (req, res) => {
     try {
         const { email, password } = req.body;
+        const user = await User.findOne({ email, password });
 
-        // Find user by email
-        const user = await User.findOne({ email });
         if (!user) return res.status(400).json({ error: 'Invalid credentials' });
-
-        // Compare passwords
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(400).json({ error: 'Invalid credentials' });
 
         res.json({ message: 'Login successful', user });
     } catch (error) {
@@ -111,14 +92,14 @@ app.post('/api/profile', upload.single('photo'), async (req, res) => {
 
         user.name = name || user.name;
         user.phone = phone || user.phone;
-        user.birthdate = birthdate || user.birthdate;
-        user.gender = gender || user.gender;
+        user.birthdate = birthdate || user.birthdate; // Update Birthdate
+        user.gender = gender || user.gender;         // Update Gender
         if (req.file) user.photo = `/uploads/${req.file.filename}`;
 
         await user.save();
-
         res.json({ message: 'Profile updated successfully', user });
     } catch (error) {
+        console.error('Error updating profile:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -126,16 +107,15 @@ app.post('/api/profile', upload.single('photo'), async (req, res) => {
 // Fetch Profile Data
 app.get('/api/get-profile', async (req, res) => {
     try {
-        const { email } = req.query;
+        const { email } = req.query; // Extract email from query params
         if (!email) return res.status(400).json({ message: 'Email is required' });
 
         const user = await User.findOne({ email });
         if (!user) return res.status(404).json({ message: 'User not found' });
 
-        const totalExpenses = await Expense.aggregate([
-            { $match: { email } },
-            { $group: { _id: null, total: { $sum: "$amount" } } }
-        ]);
+        // Fetch user's total expenses
+        const expenses = await Expense.find({ email });
+        const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
 
         res.json({
             name: user.name,
@@ -143,7 +123,7 @@ app.get('/api/get-profile', async (req, res) => {
             birthdate: user.birthdate,
             gender: user.gender,
             photo: user.photo || null,
-            totalExpenses: totalExpenses[0]?.total || 0
+            totalExpenses
         });
     } catch (error) {
         console.error('Error fetching profile:', error.message);
@@ -151,21 +131,27 @@ app.get('/api/get-profile', async (req, res) => {
     }
 });
 
-// Update Account (Change Email and Password)
-app.post('/api/update-account', async (req, res) => {
+// Add Expense
+app.post('/api/expenses', async (req, res) => {
     try {
-        const { email, newEmail, password } = req.body;
+        const { email, amount, description } = req.body;
+        const newExpense = new Expense({ email, amount, description });
 
-        const user = await User.findOne({ email });
-        if (!user) return res.status(404).json({ error: 'User not found' });
-
-        if (newEmail) user.email = newEmail;
-        if (password) user.password = await bcrypt.hash(password, 10); // Hash new password
-
-        await user.save();
-        res.json({ message: 'Account updated successfully' });
+        await newExpense.save();
+        res.json({ message: 'Expense added successfully', expense: newExpense });
     } catch (error) {
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: 'Failed to add expense' });
+    }
+});
+
+// Get User-Specific Expenses
+app.get('/api/expenses', async (req, res) => {
+    try {
+        const { email } = req.query;
+        const expenses = await Expense.find({ email });
+        res.json(expenses);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch expenses' });
     }
 });
 
