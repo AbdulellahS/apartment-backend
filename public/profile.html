@@ -128,9 +128,11 @@
             document.getElementById('phone').value = phone || '';
             document.getElementById('birthdate').value = birthdate ? birthdate.split('T')[0] : '';
             document.getElementById('gender').value = gender || '';
-            document.getElementById('email').value = email;
+            document.getElementById('email').value = email; // Ensure email is set
             document.getElementById('photo-preview').src = photo || 'default-avatar.png';
             document.getElementById('total-expenses').innerText = totalExpenses || 0;
+        } else {
+            console.error('Failed to fetch profile data');
         }
     }
 
@@ -143,6 +145,7 @@
             reader.readAsDataURL(file);
         }
     }
+
 
     // Toggle Section Visibility
     function toggleSection(sectionId) {
