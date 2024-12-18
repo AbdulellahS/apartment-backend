@@ -135,26 +135,24 @@
 
         // Render Expenses in Table
         function renderExpenses() {
-            const table = document.getElementById('expenses-table');
-            table.innerHTML = '';
-            expenses.forEach((exp, index) => {
-                table.innerHTML += `
-                <tr>
-                    <td><input type="checkbox" data-id="${exp._id}" class="select-checkbox"></td>
-                    <td>${exp.description}</td>
-                    <td>${exp.amount} SAR</td>
-                    <td>${new Date(exp.date).toLocaleDateString()}</td>
-                    <td>${exp.modifiedDate ? new Date(exp.modifiedDate).toLocaleDateString() : '-'}</td>
-                    <td class="action-icons">
-                        <i class="bi bi-pencil-square text-warning" onclick="openEditModal(${index})"></i>
-                        <i class="bi bi-trash text-danger" onclick="openDeleteModal('${exp._id}')"></i>
-                    </td>
-                </tr>
-            `;
-            });
-
-            toggleDeleteSelectedButton();
-        }
+    const table = document.getElementById('expenses-table');
+    table.innerHTML = '';
+    expenses.forEach((exp, index) => {
+        table.innerHTML += `
+            <tr>
+                <td><input type="checkbox" data-id="${exp._id}" class="select-checkbox"></td>
+                <td>${exp.description}</td>
+                <td>${exp.amount} SAR</td>
+                <td>${new Date(exp.date).toLocaleDateString()}</td>
+                <td>${exp.modifiedDate ? new Date(exp.modifiedDate).toLocaleDateString() : '-'}</td>
+                <td class="action-icons">
+                    <i class="bi bi-pencil-square text-warning" onclick="openEditModal(${index})"></i>
+                    <i class="bi bi-trash text-danger" onclick="openDeleteModal('${exp._id}')"></i>
+                </td>
+            </tr>
+        `;
+    });
+}
 
         // Add Expense
         document.getElementById('expense-form').addEventListener('submit', async (e) => {
