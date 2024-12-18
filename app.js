@@ -12,6 +12,17 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(bodyParser.json());
 app.use(express.static('public')); // Serve static files
+// Redirect root route to "index.html"
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Fallback for all undefined routes
+app.get('*', (req, res) => {
+    res.redirect('/');
+});
+
+app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // MongoDB Connection
