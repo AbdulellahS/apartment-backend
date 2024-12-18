@@ -48,7 +48,7 @@
         </div>
         <div id="personal-section">
             <div class="profile-photo-container">
-                <img id="photo-preview" src="default-avatar.png" alt="Profile Photo" class="profile-photo">
+                <img id="photo-preview" src="default-avatar.png" alt="Profile Photo" class="profile-photo" onerror="this.src='default-avatar.png'">
                 <button class="btn btn-sm btn-secondary mt-2" onclick="document.getElementById('photo').click()">Change Photo</button>
                 <input type="file" id="photo" accept="image/*" style="display:none" onchange="previewPhoto(event)">
             </div>
