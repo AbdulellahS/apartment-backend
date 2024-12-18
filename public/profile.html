@@ -68,9 +68,11 @@
                     <!-- Profile Photo Section -->
                     <div class="profile-photo-container">
                         <img id="photo-preview" src="default-avatar.png" alt="Profile Photo" class="profile-photo">
-                        <button class="btn btn-sm btn-secondary" onclick="document.getElementById('photo').click()">Change
+                        <button class="btn btn-sm btn-secondary"
+                            onclick="document.getElementById('photo').click()">Change
                             Photo</button>
-                        <input type="file" id="photo" accept="image/*" style="display:none" onchange="previewPhoto(event)">
+                        <input type="file" id="photo" accept="image/*" style="display:none"
+                            onchange="previewPhoto(event)">
                     </div>
 
                     <!-- Name -->
@@ -170,14 +172,14 @@
         async function fetchProfileData() {
             const res = await fetch(`https://apartment-backend-2qwi.onrender.com/api/get-profile?email=${email}`);
             if (res.ok) {
-                const { name, phone, photo, birthdate, gender, totalExpenses } = await res.json();
+                const { name, phone, photo, birthdate, gender } = await res.json();
                 document.getElementById('name').value = name || '';
                 document.getElementById('phone').value = phone || '';
-                document.getElementById('email').value = email;
                 document.getElementById('birthdate').value = birthdate ? birthdate.split('T')[0] : '';
                 document.getElementById('gender').value = gender || '';
                 document.getElementById('photo-preview').src = photo || 'default-avatar.png';
-                document.getElementById('total-expenses').innerText = totalExpenses || 0;
+            } else {
+                alert('Failed to fetch profile data');
             }
         }
 

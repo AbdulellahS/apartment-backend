@@ -133,10 +133,11 @@ app.get('/api/get-profile', async (req, res) => {
             phone: user.phone,
             birthdate: user.birthdate,
             gender: user.gender,
-            photo: user.photo || null,
+            photo: user.photo || 'default-avatar.png', // Default if no photo
             totalExpenses
         });
     } catch (error) {
+        console.error('Error fetching profile:', error.message);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
