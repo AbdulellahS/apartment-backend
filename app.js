@@ -27,7 +27,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // MongoDB Connection
 const MONGO_URI = process.env.MONGO_URI || "YOUR_MONGODB_CONNECTION_STRING";
-mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(MONGO_URI)
     .then(() => console.log('MongoDB connected successfully!'))
     .catch(err => console.error('MongoDB connection error:', err));
 
@@ -235,6 +235,18 @@ app.get('/api/expenses', async (req, res) => {
 });
 
 // Start the Server
-app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
+const server = app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
+
+server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+        console.error(`Port ${PORT} is already in use. Trying another port...`);
+        app.listen(0, () => {
+            const newPort = server.address().port;
+            console.log(`Server is now running on port ${newPort}`);
+        });
+    } else {
+        console.error('Server error:', err);
+    }
 });
