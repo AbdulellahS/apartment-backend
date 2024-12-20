@@ -14,7 +14,7 @@ app.use(bodyParser.json());
 app.use(express.static('public')); // Serve static files
 // Redirect root route to "login.html"
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'login.html'));
+    res.redirect('/login.html'); // Adjust to your main page
 });
 
 // Fallback for all undefined routes
