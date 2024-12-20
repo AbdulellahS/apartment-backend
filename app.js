@@ -12,9 +12,9 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(bodyParser.json());
 app.use(express.static('public')); // Serve static files
-// Redirect root route to "index.html"
+// Redirect root route to "login.html"
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
 // Fallback for all undefined routes
