@@ -242,8 +242,8 @@ const server = app.listen(PORT, () => {
 server.on('error', (err) => {
     if (err.code === 'EADDRINUSE') {
         console.error(`Port ${PORT} is already in use. Trying another port...`);
-        app.listen(0, () => {
-            const newPort = server.address().port;
+        const fallbackServer = app.listen(0, () => {
+            const newPort = fallbackServer.address().port;
             console.log(`Server is now running on port ${newPort}`);
         });
     } else {
